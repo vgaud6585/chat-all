@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white d-flex justify-content-between">
+            <span>Chatting with: <b>{{ receiver }}</b></span>
+            <a href="{% url 'chat_lobby' %}" class="btn btn-sm btn-light">Lobby</a>
+        </div>
+        
+        <div id="chat-window" class="card-body bg-light" style="height: 400px; overflow-y: auto;">
+            {% for m in messages %}
+                <div class="mb-2 d-flex flex-column {% if m.sender == my_name %}align-items-end{% else %}align-items-start{% endif %}">
+                    <div class="p-2 rounded shadow-sm {% if m.sender == my_name %}bg-primary text-white{% else %}bg-white text-dark{% endif %}" style="max-width: 75%;">
+                        {{ m.message }}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="card-footer">
+            <form id="chat-form" class="d-flex">
+                  {% csrf_token %}
+                <input type="text" id="message-input" class="form-control me-2" placeholder="Write a message..." required>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const roomId = "{{ room_id }}";
+    const myName = "{{ my_name }}";
+    const receiver = "{{ receiver }}";
+
+    // WebSocket Connection
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${roomId}/`);
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const chatWindow = document.querySelector('#chat-window');
+        const isMe = data.sender === myName;
+
+        chatWindow.innerHTML += `
+            <div class="mb-2 d-flex flex-column ${isMe ? 'align-items-end' : 'align-items-start'}">
+                <div class="p-2 rounded shadow-sm ${isMe ? 'bg-primary text-white' : 'bg-white text-dark'}" style="max-width: 75%;">
+                    ${data.message}
+                </div>
+            </div>`;
+        chatWindow.scrollTop = chatWindow.scrollHeight;
+    };
+
+    document.querySelector('#chat-form').onsubmit = function(e) {
+        e.preventDefault();
+        const input = document.querySelector('#message-input');
+        chatSocket.send(JSON.stringify({
+            'message': input.value,
+            'sender': myName,
+            'receiver': receiver
+        }));
+        input.value = '';
+    };
+</script>
+{% endblock %}

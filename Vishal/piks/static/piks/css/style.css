@@ -1,0 +1,37 @@
+
+/* write your css here */
+body {
+  box-sizing: border-box;
+  background-color: #e1fbfa;
+  margin: 0;
+  padding: 0;
+}
+.clickable {
+  box-sizing: border-box;
+  background-color: lightblue;
+  cursor: pointer;
+  border: 1px solid #007BFF;
+}
+.clickable:hover {
+  border: 1px solid red;
+}
+.outer {
+  width: 90%;
+  height: 180px;
+  background-color: pink;
+  margin: auto;
+}
+.info {
+  box-sizing: border-box;
+  width: 100%;
+  height: 200px;
+  z-index: 1;
+  background-color: rgba(231, 159, 130, 0.7);
+  position: fixed;
+  top: -200px;
+  left: 0;
+  transition: all 1s;
+}
+.hide {
+  top: 0;
+}

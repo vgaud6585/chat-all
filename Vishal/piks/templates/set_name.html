@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4>Find Your Name</h4>
+            </div>
+            <div class="card-body p-4">
+                <p class="text-muted text-center">Apna naam search karein jo Student table mein hai.</p>
+                
+                <form method="POST" id="nameForm">
+                    {% csrf_token %}
+                    <div class="position-relative">
+                        <input type="text" id="studentSearch" name="nickname" 
+                               class="form-control form-control-lg text-center" 
+                               placeholder="Start typing your name..." autocomplete="off" required>
+                        
+                        <div id="resultsList" class="list-group position-absolute w-100 shadow-sm" style="z-index: 1000; display: none;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mt-3" id="enterBtn" disabled>
+                        Enter Chat Lobby
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const searchInput = document.getElementById('studentSearch');
+    const resultsList = document.getElementById('resultsList');
+    const enterBtn = document.getElementById('enterBtn');
+
+    searchInput.addEventListener('input', function() {
+        const query = this.value;
+
+        if (query.length > 0) {
+            fetch(`/search-student/?term=${query}`)
+                .then(response => response.json())
+                .then(data => {
+                    resultsList.innerHTML = '';
+                    if (data.length > 0) {
+                        resultsList.style.display = 'block';
+                        data.forEach(item => {
+                            const div = document.createElement('a');
+                            div.classList.add('list-group-item', 'list-group-item-action');
+                            div.style.cursor = 'pointer';
+                            div.innerText = item.name;
+                            div.onclick = function() {
+                                searchInput.value = item.name;
+                                resultsList.style.display = 'none';
+                                enterBtn.disabled = false; // Name select hone par button chalu hoga
+                            };
+                            resultsList.appendChild(div);
+                        });
+                    } else {
+                        resultsList.style.display = 'none';
+                    }
+                });
+        } else {
+            resultsList.style.display = 'none';
+        }
+    });
+
+    // Bahar click karne par dropdown band ho jaye
+    document.addEventListener('click', function(e) {
+        if (e.target !== searchInput) resultsList.style.display = 'none';
+    });
+</script>
+{% endblock %}

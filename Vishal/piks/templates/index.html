@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>All Students</h2>
+<table class="table table-striped mt-3">
+    <thead class="table-dark">
+        <tr>
+            <th>Roll No.</th>
+            <th>Full Name</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for s in students %}
+        <tr>
+            <td>{{ s.roll }}</td>
+            <td>{{ s.name }}</td>
+            <td>
+                <a href="{% url 'update' s.id %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'delete' s.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
