@@ -1,0 +1,7 @@
+django
+channels
+daphne
+channels-redis
+gunicorn
+uvicorn
+whitenoise
